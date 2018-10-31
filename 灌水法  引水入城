@@ -1,0 +1,133 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+int n,m;
+int a[510][510],b[510];
+int ta[5]={0,1,0,-1,0},tb[5]={0,0,1,0,-1};
+bool f[510][510];
+struct lu
+{
+    int l;
+    int r;
+}s[510][510];
+void dfs(int x,int y)   //灌水法
+{
+    if(x==n)b[y]=1;
+    if(f[x][y])return;
+    for(int j=1;j<=4;j++)
+    {
+        int tx=x+ta[j],ty=y+tb[j];
+        if(tx<1||tx>n||ty<1||ty>m)continue;
+        if(a[tx][ty]<a[x][y])
+        {
+            dfs(tx,ty);
+        	s[x][y].l=min(s[x][y].l,s[tx][ty].l);
+        	s[x][y].r=max(s[x][y].r,s[tx][ty].r);
+        }
+    }
+    f[x][y]=true;
+}
+void init()
+{
+    for(int i=1;i<n;i++)
+    {
+        for(int j=1;j<=m;j++)
+        {
+            s[i][j].l=999;
+            s[i][j].r=0;
+        }
+    }
+    for(int i=1;i<=m;i++)
+    {
+        s[n][i].l=i;
+        s[n][i].r=i;
+    }
+}
+int ans1,ans2;
+
+struct tu
+{
+    int to;
+    int next;
+    int w;
+}e[1000010];
+int g[1000010],tot;
+void addedge(int a,int b,int c)
+{
+    tot++;
+    e[tot].to=b;
+    e[tot].next=g[a];
+    e[tot].w=c;
+    g[a]=tot;
+}
+int dis[100010],q[1000010];
+bool v[100010];
+void spfa()
+{
+    dis[1]=0;
+    int h=0,t=1;
+    q[t]=1;
+    v[1]=true;
+    while(h!=t)
+    {
+        h=h%n+1;
+        int u=q[h];
+        int tmp=g[u];
+        while(tmp!=0)
+        {
+            if(dis[e[tmp].to]>dis[u]+e[tmp].w)
+            {
+                dis[e[tmp].to]=dis[u]+e[tmp].w;
+                if(!v[e[tmp].to])
+                {
+                    t=t%n+1;
+                    q[t]=e[tmp].to;
+                    v[e[tmp].to]=true;
+                }
+            }
+            tmp=e[tmp].next;
+        }
+        v[u]=false;
+    }
+}
+int main()
+{
+    scanf("%d %d",&n,&m);
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=1;j<=m;j++)scanf("%d",&a[i][j]);
+    }
+    
+    if(n==1)
+    {
+        for(int i=1;i<=m;i++)
+        {
+            if(a[1][i]>a[1][i-1])ans2++;
+        }
+        printf("1\n%d",ans2);
+        return 0;
+    }
+    
+    init();
+    for(int i=1;i<=m;i++)dfs(1,i);
+    
+    for(int i=1;i<=m;i++)
+    {
+        if(b[i]==0)ans1++;
+    }
+    if(ans1!=0)
+    {
+        printf("0\n%d",ans1);
+        return 0;
+    }
+    
+    memset(dis,0x3f,sizeof(dis));
+    for(int i=2;i<=m+1;i++)addedge(i,i-1,0);
+    for(int i=1;i<=m;i++)addedge(s[1][i].l,s[1][i].r+1,1);
+    spfa();
+    printf("1\n%d",dis[m+1]);
+    return 0;
+}
