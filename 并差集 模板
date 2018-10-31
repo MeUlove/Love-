@@ -1,0 +1,33 @@
+#include<iostream>
+#include<cstring>
+#include<cmath>
+#include<cstdio>
+#include<algorithm>
+using namespace std;
+int n,m;
+int f[100010];
+int find(int x)
+{
+    if(f[x]==x)return x;
+    else return f[x]=find(f[x]);
+}
+int main()
+{
+    scanf("%d %d",&n,&m);
+    for(int i=1;i<=n;i++)f[i]=i;
+    for(int i=1;i<=m;i++)
+    {
+        int x,y,z;
+        scanf("%d %d %d",&z,&x,&y);
+        if(z==1)
+        {
+            f[find(x)]=find(y);
+        }
+        else if(z==2)
+        {
+            if(find(x)==find(y))printf("Y\n");
+            else printf("N\n");
+        }
+    }
+    return 0;
+}
