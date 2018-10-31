@@ -1,0 +1,61 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+int n,m;
+int s[500010],a[500010],c[500010];
+int lowbit(int x)
+{
+	return x&(-x);
+}
+void up(int x,int ssum)
+{
+	while(x<=n)
+	{
+		s[x]+=ssum;
+		x+=lowbit(x);
+	}
+}
+int sum(int x)
+{
+	int ans=0;
+	while(x>0)
+	{
+		ans+=s[x];
+		x-=lowbit(x);
+	}
+	return ans;
+}
+int main()
+{
+	scanf("%d %d",&n,&m);
+	for(int i=1;i<=n;i++)
+	{
+		scanf("%d",&a[i]);
+		c[i]=a[i]-a[i-1];
+		up(i,c[i]);
+	}
+	for(int i=1;i<=m;i++)
+	{
+		int z;
+		scanf("%d",&z);
+		if(z==1)
+		{
+			int x,y,k;
+			scanf("%d %d %d",&x,&y,&k);
+			c[x]+=k;
+			c[y+1]-=k;
+			up(x,k);
+			up(y+1,-k);
+		}
+		else if(z==2)
+		{
+			int x;
+			scanf("%d",&x);
+			printf("%d\n",sum(x));
+		}
+	}
+	return 0;
+}
