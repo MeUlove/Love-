@@ -1,0 +1,62 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+int n,m;
+int g[500010],tot;
+struct dian
+{
+    int to;
+    int next;
+}e[500010];
+void addedge(int a,int b)
+{
+    tot++;
+    e[tot].to=b;
+    e[tot].next=g[a];
+    g[a]=tot;
+}
+int col[500010],ans[5],anss;
+bool dfs(int a,int b)
+{
+    col[a]=b;
+    ans[b+1]++;
+    int tmp=g[a];
+    while(tmp!=0)
+    {
+        int u=e[tmp].to;
+        if(col[u]==0&&!dfs(u,-b))return false;
+        if(col[u]!=0&&col[u]==col[a])return false;
+        tmp=e[tmp].next;
+    }
+    return true;
+}
+int main()
+{
+    cin>>n>>m;
+    for(int i=1;i<=m;i++)
+    {
+        int x,y;
+        cin>>x>>y;
+        addedge(x,y);
+        addedge(y,x);
+    }
+    for(int i=1;i<=n;i++)
+    {
+        if(col[i]==0)
+        {
+            ans[0]=0;
+            ans[2]=0;
+            if(!dfs(i,1))
+            {
+                cout<<"Impossible";
+                return 0;
+            }
+            anss+=min(ans[0],ans[2]);
+        }
+    }
+    cout<<anss;
+    return 0;
+}
